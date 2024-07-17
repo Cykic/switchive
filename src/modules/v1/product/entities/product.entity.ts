@@ -1,5 +1,4 @@
-
-import { Column, Model, Table } from 'sequelize-typescript';
+import { Column, DataType, Model, Table } from 'sequelize-typescript';
 
 @Table
 export class Product extends Model<Product> {
@@ -10,6 +9,7 @@ export class Product extends Model<Product> {
 
   @Column({
     allowNull: false,
+    type: DataType.FLOAT,
   })
   price: number;
 

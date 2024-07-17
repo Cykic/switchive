@@ -9,28 +9,40 @@ import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductService {
-  constructor() {}
+  constructor(
+    @InjectModel(Product)
+    private productModel: typeof Product,
+  ) {}
   /**
    * Find all Products of a user
    * @param {UserDocument} user
    * @param {PaginateQuery} query
    * @returns
    */
-  async findAllProduct(query: PaginateQuery): Promise<Array<Product>> {
-    const filter: WhereOptions<Product> = {};
+  async findAllProduct(
+    query: any,
+  ): Promise<{ data: Product[]; total: number }> {
+    const { search, page = 1, limit = 10 } = query;
 
-    if (query?.search) {
+    const offset = (page - 1) * limit;
+
+    const filter: any = {};
+
+    if (search) {
       filter[Op.or] = [
-        { name: { [Op.iLike]: `%${query.search}%` } }, // Use Op.like for case-sensitive
-        { description: { [Op.iLike]: `%${query.search}%` } },
+        { name: { [Op.iLike]: `%${search}%` } }, // Use Op.like for case-sensitive
+        { description: { [Op.iLike]: `%${search}%` } },
       ];
     }
 
-    const products = await Product.findAll({
-      where: filter,
-    });
+    const { rows: data, count: total } =
+      await this.productModel.findAndCountAll({
+        where: filter,
+        offset,
+        limit,
+      });
 
-    return products;
+    return { data, total };
   }
 
   /**

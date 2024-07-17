@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  Put,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -29,8 +30,22 @@ export class ProductController {
   @Get()
   @Protected()
   async findAll(@Query() query: PaginateQuery) {
-    const product = await this.productService.findAllProduct(query);
-    return APIRes(product, 'Product fetched');
+    const { data, total } = await this.productService.findAllProduct(query);
+
+    const page = parseInt(query.page, 10) || 1;
+    const limit = parseInt(query.limit, 10) || 10;
+    const totalPages = Math.ceil(total / limit);
+
+    return APIRes(
+      {
+        data,
+        total,
+        page,
+        limit,
+        totalPages,
+      },
+      'Product fetched',
+    );
   }
 
   @Get(':id')
@@ -40,7 +55,7 @@ export class ProductController {
     return APIRes(product, 'Product fetched');
   }
 
-  @Patch(':id')
+  @Put(':id')
   @Protected()
   async update(
     @Param('id') id: string,

@@ -7,5 +7,9 @@ export class PaginateQuery {
 
   @IsString()
   @IsOptional()
-  sort: string;
+  page: string;
+
+  @IsString()
+  @IsOptional()
+  limit: string;
 }
