@@ -9,10 +9,7 @@ import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductService {
-  constructor(
-    @InjectModel(Product)
-    private productModel: typeof Product,
-  ) {}
+  constructor() {}
   /**
    * Find all Products of a user
    * @param {UserDocument} user
@@ -35,12 +32,11 @@ export class ProductService {
       ];
     }
 
-    const { rows: data, count: total } =
-      await this.productModel.findAndCountAll({
-        where: filter,
-        offset,
-        limit,
-      });
+    const { rows: data, count: total } = await Product.findAndCountAll({
+      where: filter,
+      offset,
+      limit,
+    });
 
     return { data, total };
   }
